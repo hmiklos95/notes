@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8" name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;theme&quot;}">
+ </head> 
+ <body> 
+  <vaadin-vertical-layout spacing size-full> 
+   <vaadin-horizontal-layout :right> 
+    <vaadin-button plain-text _id="sync">
+      Sync 
+    </vaadin-button> 
+    <vaadin-label size-auto plain-text _id="welcome" :middle>
+      Label 
+    </vaadin-label> 
+    <vaadin-label size-auto plain-text _id="loggedInName" :middle>
+      Label 
+    </vaadin-label> 
+    <vaadin-button plain-text _id="logout" :middle>
+      Log out 
+    </vaadin-button> 
+   </vaadin-horizontal-layout> 
+   <vaadin-horizontal-layout size-full _id="mainsplitPanelWrapper" :expand> 
+    <vaadin-horizontal-split-panel width="200px" height="200px" _id="mainsplitPanel"></vaadin-horizontal-split-panel> 
+   </vaadin-horizontal-layout> 
+  </vaadin-vertical-layout>  
+ </body>
+</html>
