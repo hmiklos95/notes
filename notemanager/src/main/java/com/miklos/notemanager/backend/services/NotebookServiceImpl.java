@@ -2,6 +2,7 @@ package com.miklos.notemanager.backend.services;
 
 
 
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Model;
 import javax.inject.Inject;

@@ -1,7 +1,10 @@
 package com.miklos.notemanager.frontend.main;
 
+import javax.inject.Inject;
+
 import com.miklos.notemanager.backend.entities.Note;
 import com.miklos.notemanager.backend.entities.TextNote;
+import com.miklos.notemanager.backend.services.NoteService;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
@@ -11,6 +14,7 @@ public class NoteEditor extends NoteViewer {
 	private TextNote currentNote;
 	
 	private RichTextArea textArea;
+	
 	
 	public NoteEditor() {
 		textArea = new RichTextArea();

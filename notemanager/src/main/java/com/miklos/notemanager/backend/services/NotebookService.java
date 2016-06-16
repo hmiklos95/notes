@@ -6,7 +6,6 @@ import com.miklos.notemanager.backend.entities.Note;
 import com.miklos.notemanager.backend.entities.Notebook;
 import com.miklos.notemanager.backend.entities.User;
 
-
 @Model
 public interface NotebookService {
 	public void createNotebook(User creator, Notebook notebook);
