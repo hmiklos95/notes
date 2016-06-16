@@ -3,16 +3,16 @@ package com.miklos.notemanager.backend.liveedit;
 import com.miklos.notemanager.backend.entities.Note;
 import com.miklos.notemanager.backend.entities.User;
 
-public class EditEvent {
-	private final Note edited;
+public class MergedNoteEvent {
+	private final Note merged;
 	private final User editor;
-	public EditEvent(Note edited, User editor) {
+	public MergedNoteEvent(Note merged, User editor) {
 		super();
-		this.edited = edited;
+		this.merged = merged;
 		this.editor = editor;
 	}
-	public Note getEdited() {
-		return edited;
+	public Note getMerged() {
+		return merged;
 	}
 	public User getEditor() {
 		return editor;

@@ -7,6 +7,7 @@ import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Model;
 import javax.inject.Inject;
 
+import com.miklos.notemanager.backend.entities.Note;
 import com.miklos.notemanager.backend.entities.Notebook;
 import com.miklos.notemanager.backend.services.NoteService;
 
@@ -20,12 +21,12 @@ public class BroadcasterFactoryImpl implements BroadcasterFactory {
 	private NoteService service;
 	
 	@Override
-	public Broadcaster createForNotebook(Notebook notebook) {
-		if(!broadcasters.containsKey(notebook.getId())) {
-			broadcasters.put(notebook.getId(), new Broadcaster(notebook, service));
+	public Broadcaster createForNote(Note note) {
+		if(!broadcasters.containsKey(note.getId())) {
+			broadcasters.put(note.getId(), new Broadcaster(note, service));
 		}
 		
-		return broadcasters.get(notebook.getId());
+		return broadcasters.get(note.getId());
 	}
 
 }

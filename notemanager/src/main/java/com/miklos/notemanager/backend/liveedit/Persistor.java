@@ -8,15 +8,15 @@ import com.miklos.notemanager.backend.services.NoteService;
 public class Persistor {
 	private NoteService service;
 	
-	private BlockingQueue<EditEvent> eventsToPersist;
+	private BlockingQueue<MergedNoteEvent> eventsToPersist;
 	
 	public Persistor(NoteService service) {
 		this.service = service;
-		eventsToPersist = new LinkedBlockingQueue<EditEvent>();
+		eventsToPersist = new LinkedBlockingQueue<MergedNoteEvent>();
 	}
 	
 	
-	public void addEditEventToPersist(EditEvent event) {
+	public void addEditEventToPersist(MergedNoteEvent event) {
 		eventsToPersist.add(event);
 	}
 	

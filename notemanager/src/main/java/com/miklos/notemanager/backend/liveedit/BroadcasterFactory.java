@@ -2,9 +2,9 @@ package com.miklos.notemanager.backend.liveedit;
 
 import javax.enterprise.inject.Model;
 
-import com.miklos.notemanager.backend.entities.Notebook;
+import com.miklos.notemanager.backend.entities.Note;
 
 @Model
 public interface BroadcasterFactory {
-	public Broadcaster createForNotebook(Notebook notebook);
+	public Broadcaster createForNote(Note note);
 }

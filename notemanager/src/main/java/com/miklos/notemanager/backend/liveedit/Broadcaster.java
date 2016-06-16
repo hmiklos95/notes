@@ -5,22 +5,22 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+import com.miklos.notemanager.backend.entities.Note;
 import com.miklos.notemanager.backend.entities.Notebook;
+import com.miklos.notemanager.backend.liveedit.lib.diff_match_patch;
 import com.miklos.notemanager.backend.services.NoteService;
 
 public class Broadcaster {
-	private Notebook monitored;
-	
-	private Persistor persistor;
-	
-	private ExecutorService updaterService =
-		        Executors.newSingleThreadExecutor();
+	private Note monitored;
 	
 	private LinkedList<BroadcastReceiver> receivers =
 	        new LinkedList<BroadcastReceiver>();
 	
-	public Broadcaster(Notebook notebook, NoteService service) {
-		monitored = notebook;
+	
+	private diff_match_patch diff = new diff_match_patch();
+	
+	public Broadcaster(Note note, NoteService service) {
+		monitored = note;
 	}
 	
 	public void register(BroadcastReceiver receiver) {
@@ -31,13 +31,7 @@ public class Broadcaster {
 		receivers.remove(receiver);
 	}
 
-	public void broadcast(EditEvent event) {
-		for (final BroadcastReceiver listener: receivers)
-			updaterService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    listener.receiveBroadcast(event);
-                }
-            });
+	public void broadcast(NoteEditedEvent event) {
+		
 	}
 }
