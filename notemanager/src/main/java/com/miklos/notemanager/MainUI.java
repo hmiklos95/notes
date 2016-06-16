@@ -3,6 +3,7 @@ package com.miklos.notemanager;
 import javax.inject.Inject;
 import javax.servlet.annotation.WebServlet;
 
+import com.miklos.notemanager.backend.liveedit.BroadcasterFactory;
 import com.miklos.notemanager.backend.services.NoteService;
 import com.miklos.notemanager.backend.services.NotebookService;
 import com.miklos.notemanager.backend.services.UserService;
@@ -50,7 +51,12 @@ public class MainUI extends UI {
 	@Inject
 	private UserService userService;
 	
+	@Inject 
+	private BroadcasterFactory factory;
+	
 	private Navigator navigator;
+	
+	private MainScreen mainScreen;
 
 
 	@Override
@@ -72,7 +78,11 @@ public class MainUI extends UI {
 		
 		navigator.addView("register", new RegisterScreen(this, accessControl));
 		
-		navigator.addView("", new MainScreen(this, accessControl, noteService, userService, notebookService));
+		mainScreen = new MainScreen(this, accessControl, noteService, userService, notebookService, factory);
+		
+		navigator.addView("", mainScreen);
+		
+		
 	}
 	
 	private void checkLoggedIn() {
@@ -84,9 +94,11 @@ public class MainUI extends UI {
 	}
 
 	
-	protected void showMainView() {
+	private void showMainView() {
 		navigator.navigateTo("");
 	}
+	
+	
 	
 	public Navigator getNavigator() {
 		return navigator;

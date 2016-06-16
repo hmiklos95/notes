@@ -1,11 +1,17 @@
 package com.miklos.notemanager.frontend.main;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 import com.miklos.notemanager.backend.entities.Note;
 import com.miklos.notemanager.backend.entities.Notebook;
+import com.miklos.notemanager.backend.entities.TextNote;
 import com.miklos.notemanager.backend.entities.User;
+import com.miklos.notemanager.backend.liveedit.BroadcastReceiver;
+import com.miklos.notemanager.backend.liveedit.Broadcaster;
+import com.miklos.notemanager.backend.liveedit.BroadcasterFactory;
+import com.miklos.notemanager.backend.liveedit.EditEvent;
 import com.miklos.notemanager.backend.services.NoteService;
 
 import com.miklos.notemanager.backend.services.NotebookService;
@@ -18,7 +24,7 @@ import com.vaadin.ui.Grid;
 
 import com.vaadin.ui.UI;
 
-public class MainScreen extends MainScreenDesign implements View{
+public class MainScreen extends MainScreenDesign implements View, BroadcastReceiver {
 
 	private UI ui;
 	private AccessControl accessControl;
@@ -33,9 +39,13 @@ public class MainScreen extends MainScreenDesign implements View{
 	private Grid noteGrid;
 	
 	private BeanItemContainer container;
+	
+	private List<Broadcaster> registeredBroadcasters;
+	
+	private BroadcasterFactory factory;
 
 	public MainScreen(UI ui, AccessControl accessControl, NoteService noteService, UserService userService,
-			NotebookService notebookService) {
+			NotebookService notebookService, BroadcasterFactory broadcasterFactory) {
 		this.ui = ui;
 		this.accessControl = accessControl;
 		this.noteService = noteService;
@@ -43,6 +53,13 @@ public class MainScreen extends MainScreenDesign implements View{
 		this.notebookService = notebookService;
 		this.notebookGrid = new Grid();
 		this.noteGrid = new Grid();
+		this.registeredBroadcasters = new ArrayList<Broadcaster>();
+		this.factory = broadcasterFactory;
+		
+		
+		
+		
+		
 		compose();
 		addListeners();
 	}
@@ -82,34 +99,55 @@ public class MainScreen extends MainScreenDesign implements View{
 		
 		BeanItemContainer<Notebook> container = new BeanItemContainer<Notebook>(Notebook.class, notebooks);
 		notebookGrid.setContainerDataSource(container);
+		
+		registerBroadcastListeners(notebooks);
 	}
 	
-	public void loadNotes(Notebook notebook) {
+	private void loadNotes(Notebook notebook) {
 		List<Note> notes = notebook.getNotes();
 		/*BeanItemContainer */container = new BeanItemContainer<>(Note.class, notes);
 		noteGrid.setContainerDataSource(container);
 		
 		
 		sync.addClickListener((event) -> {
-			syncNotes(notes);
+			//syncNotes(notes);
 		});
 	}
 	
-	public void loadNote(Note note) {
+	private void registerBroadcastListeners(List<Notebook> notebooks) {
+		for (Notebook notebook : notebooks) {
+			Broadcaster broadcaster = factory.createForNotebook(notebook);
+			
+			if(!registeredBroadcasters.contains(broadcaster)) {
+				registeredBroadcasters.add(broadcaster);
+			}
+			broadcaster.register(this);
+		}
+	}
+	
+	
+	
+	private void loadNote(Note note) {
 		noteViewer = NoteViewerFactory.createNoteViewer(note);
 		noteViewer.setSizeFull();
 		noteViewer.setImmediate(true);
 		noteViewer.open(note);
 		mainsplitPanel.setSecondComponent(noteViewer);
+		
+		if(note instanceof TextNote) {
+			((NoteEditor) noteViewer).addValueChangeListener((event)-> {
+				
+				factory.createForNotebook(note.getNotebook()).broadcast(new EditEvent(note, loggedInUser));
+			});
+		}
 	}
 
     private void logout() {
     	accessControl.logout();
     	ui.getNavigator().navigateTo("login");
-    }
-    
-    private void syncNotebooks() {
-    	
+    	for(Broadcaster broadcaster: registeredBroadcasters) {
+    		broadcaster.unregister(this);
+    	}
     }
 	
     private void syncNotes(List<Note> notes) {
@@ -119,7 +157,6 @@ public class MainScreen extends MainScreenDesign implements View{
     		container.removeItem(note);
     		container.addItem(synced);
 		}
-    	
     	int a = 10;
     }
     
@@ -130,6 +167,13 @@ public class MainScreen extends MainScreenDesign implements View{
 		}else{
 			loggedInUser = accessControl.getLoggedInUser();
 			loadNotebooks();
+		}
+	}
+	
+	@Override
+	public void receiveBroadcast(EditEvent event) {
+		if(!event.getEditor().getName().equals(loggedInUser.getName())) {
+			System.out.println("it works");
 		}
 	}
 }

@@ -14,8 +14,8 @@ import javax.persistence.OneToMany;
 public class Notebook extends BaseModel {
 	private String name;
 
-	@OneToMany(cascade={CascadeType.ALL}, fetch=FetchType.EAGER)
-	private List<Note> notes = new ArrayList<Note>();
+	@OneToMany(cascade={CascadeType.ALL}, fetch=FetchType.EAGER, mappedBy="notebook")
+	private List<Note> notes;
 	
 	@ManyToMany(cascade=CascadeType.ALL, mappedBy="notebooks", fetch=FetchType.EAGER)
 	private List<User> users;

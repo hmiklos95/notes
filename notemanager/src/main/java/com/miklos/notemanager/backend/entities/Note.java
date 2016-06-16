@@ -3,6 +3,7 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 
@@ -12,14 +13,25 @@ import javax.persistence.Table;
 
 public class Note extends BaseModel  {
 	private String title;
+	
+	@ManyToOne
+	private Notebook notebook;
 
 	public Note(String title) {
 		super();
 		this.title = title;
 	}
 	
+	public void setNotebook(Notebook notebook) {
+		this.notebook = notebook;
+	}
+
 	public Note() {
 		
+	}
+
+	public Notebook getNotebook() {
+		return notebook;
 	}
 
 	public void setTitle(String title) {

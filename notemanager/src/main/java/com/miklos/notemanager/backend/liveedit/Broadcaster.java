@@ -1,4 +1,4 @@
-package com.miklos.notemanager.frontend.liveedit;
+package com.miklos.notemanager.backend.liveedit;
 
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;

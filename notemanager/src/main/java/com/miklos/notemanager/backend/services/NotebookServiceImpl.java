@@ -31,7 +31,7 @@ public class NotebookServiceImpl implements NotebookService {
 
 	@Override
 	public void addNoteToNotebook(Notebook notebook, Note note) {
-		notebook.addNote(note);
+		note.setNotebook(notebook);
 		noteRepo.persist(note);
 	}
 
