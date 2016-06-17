@@ -14,6 +14,7 @@ import com.miklos.notemanager.frontend.login.LoginScreen.LoginListener;
 import com.miklos.notemanager.frontend.main.MainScreen;
 import com.miklos.notemanager.frontend.register.RegisterScreen;
 import com.vaadin.annotations.PreserveOnRefresh;
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
@@ -22,6 +23,8 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.shared.communication.PushMode;
+import com.vaadin.shared.ui.ui.Transport;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -39,7 +42,12 @@ import com.vaadin.ui.themes.ValoTheme;
 @Theme("theme")
 @Widgetset("com.miklos.notemanager.MainWidgetset")
 @CDIUI("")
+@Push(value=PushMode.AUTOMATIC, transport=Transport.LONG_POLLING)
 public class MainUI extends UI {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Inject
 	private AccessControl accessControl;

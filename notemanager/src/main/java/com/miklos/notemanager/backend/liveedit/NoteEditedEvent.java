@@ -4,16 +4,16 @@ import com.miklos.notemanager.backend.entities.Note;
 import com.miklos.notemanager.backend.entities.TextNote;
 import com.miklos.notemanager.backend.entities.User;
 
-public class MergedNoteEvent {
-	private final TextNote merged;
+public class NoteEditedEvent {
+	private final TextNote newVersion;
 	private final User editor;
-	public MergedNoteEvent(TextNote merged, User editor) {
+	public NoteEditedEvent(TextNote newVersion, User editor) {
 		super();
-		this.merged = merged;
+		this.newVersion = newVersion;
 		this.editor = editor;
 	}
-	public TextNote getMerged() {
-		return merged;
+	public TextNote getNewVersion() {
+		return newVersion;
 	}
 	public User getEditor() {
 		return editor;

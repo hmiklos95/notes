@@ -12,12 +12,17 @@ import com.miklos.notemanager.backend.liveedit.BroadcastReceiver;
 import com.miklos.notemanager.backend.liveedit.Broadcaster;
 import com.miklos.notemanager.backend.liveedit.BroadcasterFactory;
 import com.miklos.notemanager.backend.liveedit.MergedNoteEvent;
+import com.miklos.notemanager.backend.liveedit.NoteEditedEvent;
 import com.miklos.notemanager.backend.services.NoteService;
 
 import com.miklos.notemanager.backend.services.NotebookService;
 import com.miklos.notemanager.backend.services.UserService;
 import com.miklos.notemanager.frontend.login.AccessControl;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Grid;
@@ -26,6 +31,10 @@ import com.vaadin.ui.UI;
 
 public class MainScreen extends MainScreenDesign implements View, BroadcastReceiver {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private UI ui;
 	private AccessControl accessControl;
 	private User loggedInUser;
@@ -40,9 +49,11 @@ public class MainScreen extends MainScreenDesign implements View, BroadcastRecei
 	
 	private BeanItemContainer container;
 	
-	private List<Broadcaster> registeredBroadcasters;
+	private Broadcaster currentBroadcaster;
 	
 	private BroadcasterFactory factory;
+	
+	TextChangeListener currentValueChangeListener;
 
 	public MainScreen(UI ui, AccessControl accessControl, NoteService noteService, UserService userService,
 			NotebookService notebookService, BroadcasterFactory broadcasterFactory) {
@@ -53,10 +64,9 @@ public class MainScreen extends MainScreenDesign implements View, BroadcastRecei
 		this.notebookService = notebookService;
 		this.notebookGrid = new Grid();
 		this.noteGrid = new Grid();
-		this.registeredBroadcasters = new ArrayList<Broadcaster>();
 		this.factory = broadcasterFactory;
 		
-		
+		compose();
 		addListeners();
 	}
 
@@ -101,11 +111,6 @@ public class MainScreen extends MainScreenDesign implements View, BroadcastRecei
 		List<Note> notes = notebook.getNotes();
 		/*BeanItemContainer */container = new BeanItemContainer<>(Note.class, notes);
 		noteGrid.setContainerDataSource(container);
-		
-		
-		sync.addClickListener((event) -> {
-			//syncNotes(notes);
-		});
 	}
 	
 	
@@ -116,14 +121,28 @@ public class MainScreen extends MainScreenDesign implements View, BroadcastRecei
 		noteViewer.setImmediate(true);
 		noteViewer.open(note);
 		mainsplitPanel.setSecondComponent(noteViewer);
+		
+		currentBroadcaster = factory.createForNote(note);
+		
+		currentBroadcaster.unregister(this);
+		currentBroadcaster.register(this);
+		
+		currentValueChangeListener = new TextChangeListener() {
+			
+			@Override
+			public void textChange(TextChangeEvent event) {
+				currentBroadcaster.onEdit(new NoteEditedEvent((TextNote)note, loggedInUser));
+				
+			}
+		};
+		
+		((NoteEditor)noteViewer).addTextChangeListener(currentValueChangeListener);
 	}
 
     private void logout() {
     	accessControl.logout();
     	ui.getNavigator().navigateTo("login");
-    	for(Broadcaster broadcaster: registeredBroadcasters) {
-    		broadcaster.unregister(this);
-    	}
+    	currentBroadcaster.unregister(this);
     }
     
 	@Override
@@ -132,13 +151,15 @@ public class MainScreen extends MainScreenDesign implements View, BroadcastRecei
 			ui.getNavigator().navigateTo("login");
 		}else{
 			loggedInUser = accessControl.getLoggedInUser();
-			
 			loadNotebooks();
 		}
 	}
 	
 	@Override
 	public void receiveBroadcast(MergedNoteEvent event) {
+		ui.access(() -> {
+			((NoteEditor)noteViewer).setValue(event.getMerged().getText());
+		});
 		
 	}
 }
